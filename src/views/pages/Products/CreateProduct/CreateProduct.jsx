@@ -60,23 +60,23 @@ const CreateProduct = () => {
 			isValid = false;
 		}
 
-		if(!category_id.length) {
-			tmpErrors.category_id= 'Category Id cannot be empty'
+		if (!category_id.length) {
+			tmpErrors.category_id = 'Category Id cannot be empty';
 			isValid = false;
 		}
 
-		if(!description.length) {
-			tmpErrors.description= 'Description cannot be empty'
+		if (!description.length) {
+			tmpErrors.description = 'Description cannot be empty';
 			isValid = false;
 		}
 
-		if(!quantity.length) {
-			tmpErrors.quantity= 'Quantity cannot be empty'
+		if (!quantity.length) {
+			tmpErrors.quantity = 'Quantity cannot be empty';
 			isValid = false;
 		}
 
-		if(!price) {
-			tmpErrors.price= 'Price cannot be empty'
+		if (!price) {
+			tmpErrors.price = 'Price cannot be empty';
 			isValid = false;
 		}
 
@@ -84,7 +84,7 @@ const CreateProduct = () => {
 		return isValid;
 	};
 
-	const _createProduct = () => {
+	const _createProduct = async () => {
 		const payload = {
 			name,
 			category_id,
@@ -97,8 +97,8 @@ const CreateProduct = () => {
 
 		const res = await FetchApi.create('/product', payload);
 		console.log(res);
-		if(!res.isError) {
-			return navigate('/dashboard/profile')
+		if (!res.isError) {
+			return navigate('/dashboard/profile');
 		}
 	};
 	return <div>CreateProduct</div>;
