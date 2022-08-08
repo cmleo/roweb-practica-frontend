@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Spinner, Table } from 'react-bootstrap';
 import FetchApi from '../../../libs/FetchApi';
-import classes from './Categories.module.scss';
+import classes from './Products.module.scss';
 
-const Categories = () => {
-	const [categories, setCategories] = useState([]);
+const Products = () => {
+	const [products, setProducts] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [pagination, setPagination] = useState({
 		currentPage: 1,
@@ -13,18 +13,18 @@ const Categories = () => {
 	const dropDown = useRef();
 
 	useEffect(() => {
-		const getCategories = async () => {
+		const getProducts = async () => {
 			setLoading(true);
-			const res = await FetchApi.get('/categories', { page: pagination.currentPage });
+			const res = await FetchApi.get('/products', { page: pagination.currentPage });
 
 			if (!res.isError) {
-				const { data: tmpCategories, ...tmpPagination } = res.data;
-				setCategories(tmpCategories);
+				const { data: tmpProducts, ...tmpPagination } = res.data;
+				setProducts(tmpProducts);
 				setPagination(tmpPagination);
 			}
 			setLoading(false);
 		};
-		getCategories();
+		getProducts();
 	}, [pagination.currentPage]);
 
 	const goToPreviousPage = () => {
@@ -57,7 +57,7 @@ const Categories = () => {
 
 			<div>
 				<label>
-					<strong>Categories</strong> per page:
+					<strong>Products</strong> per page:
 				</label>
 				<select ref={dropDown} onChange={handleDropdown} value={pagination.perPage}>
 					<option>10</option>
@@ -67,9 +67,7 @@ const Categories = () => {
 					<option>50</option>
 				</select>
 			</div>
-
 			<br />
-
 			<Table striped bordered hover>
 				<thead>
 					<tr>
@@ -79,11 +77,11 @@ const Categories = () => {
 					</tr>
 				</thead>
 				<tbody>
-					{categories?.map((category) => (
-						<tr key={category.id}>
-							<td>{category.id}</td>
-							<td>{category.name}</td>
-							<td>{category.parent_id || '-'}</td>
+					{products?.map((product) => (
+						<tr key={product.id}>
+							<td>{product.id}</td>
+							<td>{product.name}</td>
+							<td>{product.parent_id || '-'}</td>
 						</tr>
 					))}
 				</tbody>
@@ -92,4 +90,4 @@ const Categories = () => {
 	);
 };
 
-export default Categories;
+export default Products;

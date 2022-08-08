@@ -1,42 +1,34 @@
-import React, { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import FetchApi from '../../../libs/FetchApi';
-import store from '../../../state/store';
-import reusable from '../../../resources/css/Reusable.scss';
 
-const Register = () => {
-	const {
-		state: { user },
-	} = useContext(store);
-
-	const navigate = useNavigate();
-	const [username, setUsername] = useState('');
+const ChangePassword = () => {
+	const [code, setCode] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [errors, setErrors] = useState({
-		username: '',
+		code: '',
 		email: '',
 		password: '',
 		confirmPassword: '',
+		matchPasswords: '',
 	});
+
+	const navigate = useNavigate();
 
 	const _handleChange = (e) => {
 		const { name, value } = e.target;
-
-		if (name === 'username') {
-			setUsername(value);
+		if (name === 'code') {
+			setCode(value);
 		}
-
 		if (name === 'email') {
 			setEmail(value);
 		}
-
 		if (name === 'password') {
 			setPassword(value);
 		}
-
 		if (name === 'confirmPassword') {
 			setConfirmPassword(value);
 		}
@@ -50,13 +42,13 @@ const Register = () => {
 		let isValid = true;
 		const tmpErrors = { ...errors };
 
-		if (!username.length) {
-			tmpErrors.username = 'Username cannot be empty!';
+		if (!code.length) {
+			tmpErrors.code = 'Code field cannot be empty';
 			isValid = false;
 		}
 
 		if (!email.length) {
-			tmpErrors.email = 'Email cannot be empty!';
+			tmpErrors.email = 'Email field cannot be empty';
 			isValid = false;
 		}
 
@@ -66,65 +58,62 @@ const Register = () => {
 		}
 
 		if (!password.length) {
-			tmpErrors.password = 'Password cannot be empty!';
+			tmpErrors.password = 'Password field cannot be empty';
 			isValid = false;
 		}
 
 		if (!confirmPassword.length) {
-			tmpErrors.confirmPassword = 'Confirm password cannot be empty!';
+			tmpErrors.confirmPassword = 'Confirm password field cannot be empty';
 			isValid = false;
 		}
 
-		if (!(password === confirmPassword)) {
-			tmpErrors.confirmPassword = 'Passwords do not match!';
+		if (!(confirmPassword === password)) {
+			tmpErrors.matchPasswords = 'Passwords do not match';
 			isValid = false;
 		}
 
 		setErrors(tmpErrors);
-
 		return isValid;
 	};
 
-	const _register = async () => {
+	const _resetPassword = () => {
 		const isValid = _validate();
 
-		if (!isValid) {
-			return;
+		if (isValid) {
+			const payload = {
+				code,
+				email,
+				password,
+			};
+
+			const res = FetchApi.create('/change-password', payload);
+
+			if (!res.isError) {
+				navigate('/dashboard/profile');
+			}
 		}
-
-		// make API REQUEST
-		const payload = {
-			name: username,
-			email,
-			password,
-			password_confirmation: confirmPassword,
-		};
-
-		const res = await FetchApi.create('/register', payload);
-		navigate('/verify-email');
 	};
 
 	return (
-		<section className={reusable.container}>
-			<div className={reusable.container_content}>
+		<section>
+			<div>
+				<h1>Change password</h1>
 				<div>
 					<Form.Group className='mb-3'>
-						<Form.Label>Username</Form.Label>
 						<Form.Control
-							name='username'
+							name='code'
 							type='input'
-							placeholder='Enter username'
-							value={username}
-							isInvalid={errors.username.length}
+							placeholder='Enter code'
+							value={code}
+							autoFocus={true}
+							isInvalid={errors.code.length}
 							onChange={_handleChange}
 						/>
-						{!!errors.username.length && <Form.Control.Feedback type='invalid'>{errors.username}</Form.Control.Feedback>}
+						{!!errors.code.length && <Form.Control.Feedback type='invalid'>{errors.code}</Form.Control.Feedback>}
 					</Form.Group>
 				</div>
-
 				<div>
 					<Form.Group className='mb-3'>
-						<Form.Label>Email address</Form.Label>
 						<Form.Control
 							name='email'
 							type='email'
@@ -138,11 +127,10 @@ const Register = () => {
 				</div>
 				<div>
 					<Form.Group className='mb-3'>
-						<Form.Label>Password</Form.Label>
 						<Form.Control
 							name='password'
 							type='password'
-							placeholder='Enter password'
+							placeholder='Enter new password'
 							value={password}
 							isInvalid={errors.password.length}
 							onChange={_handleChange}
@@ -152,11 +140,10 @@ const Register = () => {
 				</div>
 				<div>
 					<Form.Group className='mb-3'>
-						<Form.Label>Confirm Password</Form.Label>
 						<Form.Control
 							name='confirmPassword'
 							type='password'
-							placeholder='Confirm password'
+							placeholder='Confirm new password'
 							value={confirmPassword}
 							isInvalid={errors.confirmPassword.length}
 							onChange={_handleChange}
@@ -166,10 +153,11 @@ const Register = () => {
 						)}
 					</Form.Group>
 				</div>
-				<Button onClick={_register}>Register</Button>
+				{!!errors.matchPasswords.length && errors.matchPasswords}
+				<Button onClick={_resetPassword}>Reset password</Button>
 			</div>
 		</section>
 	);
 };
 
-export default Register;
+export default ChangePassword;

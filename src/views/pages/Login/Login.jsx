@@ -49,6 +49,11 @@ const Login = () => {
 			isValid = false;
 		}
 
+		if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+			tmpErrors.email = 'Please enter a valid email address';
+			isValid = false;
+		}
+
 		setErrors(tmpErrors);
 
 		return isValid;
