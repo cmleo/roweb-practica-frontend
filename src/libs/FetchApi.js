@@ -9,6 +9,13 @@ async function request(url, params = {}, method = 'GET') {
 		},
 	};
 
+	const sessionCsrf = window.sessionStorage.getItem('csrf');
+
+	if (!sessionCsrf) {
+		await fetch(`${process.env.REACT_APP_API_URL}/sanctum/csrf-cookie`);
+		window.sessionStorage.setItem('csrf', '1');
+	}
+
 	const token = window.sessionStorage.getItem('token');
 
 	if (token) {
@@ -20,12 +27,27 @@ async function request(url, params = {}, method = 'GET') {
 			endpoint += `?${objectToQueryString(params)}`;
 		}
 	} else {
-		options.body = JSON.stringify(params);
+		if (params instanceof FormData) {
+			options.body = params;
+			delete options.headers['Content-Type'];
+		} else {
+			options.body = JSON.stringify(params);
+		}
 	}
 
 	try {
 		const response = await fetch(endpoint, options);
 		const result = await response.json();
+
+		if (response.status === 419) {
+			window.sessionStorage.removeItem('csrf');
+			window.location.reload();
+		}
+
+		if (response.status === 401) {
+			window.sessionStorage.removeItem('token');
+			window.location = '/login';
+		}
 
 		if (!result.status) {
 			return generateErrorResponse(result);

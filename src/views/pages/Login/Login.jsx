@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import FetchApi from '../../../libs/FetchApi';
@@ -18,6 +18,12 @@ const Login = () => {
 		email: '',
 		password: '',
 	});
+
+	useEffect(() => {
+		if (user) {
+			navigate('/dashboard');
+		}
+	}, [user]);
 
 	const _handleChange = (e) => {
 		const { name, value } = e.target;
