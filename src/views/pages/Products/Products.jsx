@@ -73,7 +73,13 @@ const Products = () => {
 					<tr>
 						<th>#</th>
 						<th>Name</th>
-						<th>Parrent Id</th>
+						<th>Category Id</th>
+						<th>Description</th>
+						<th>Quantity</th>
+						<th>Price</th>
+						<th>Status</th>
+						<th>Image</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -81,7 +87,12 @@ const Products = () => {
 						<tr key={product.id}>
 							<td>{product.id}</td>
 							<td>{product.name}</td>
-							<td>{product.parent_id || '-'}</td>
+							<td>{product.category_id}</td>
+							<td>{product.description}</td>
+							<td>{product.quantity}</td>
+							<td>{product.price}</td>
+							<td>{product.status}</td>
+							<td>{product.image}</td>
 						</tr>
 					))}
 				</tbody>
